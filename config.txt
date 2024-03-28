@@ -1,3 +1,7 @@
 arm_64bit=1
+enable_uart=1
 uart_2ndstage=1
 dtoverlay=miniuart-bt
+
+[pi4]
+kernel=kernel8-rpi4.img
