@@ -3,7 +3,7 @@ RPI_VERSION ?= 4
 ARMGNU ?= aarch64-linux-gnu
 
 COPS = -DRPI_VERSION=$(RPI_VERSION) -Wall -nostdlib -nostartfiles -ffreestanding -Iinclude -mgeneral-regs-only
-ASMOPS = -Iinclude 
+ASMOPS = -Iinclude -nostdlib 
 
 BUILD_DIR = build
 SRC_DIR = src
