@@ -59,6 +59,13 @@ int printf(char* format, ...) {
                     for (int k = 0; k < strlen(string); k++, i++) {
                         buffer[i] = string[k];
                     }
+                    /*break;
+                case: 'f':
+                    
+                    break;
+                case: 'c':
+                                        
+                    break;*/ 
                 default:
                     break;
             }

@@ -47,12 +47,21 @@ void shell_run() {
         // Parse argument
         else if (next == ' ') {
             /* Remove the trailing space and null-
-            terminate the previous buffer */
+            terminate the previbw2bus buffer */
             cur_buffer[buffer_len - 1] = '\0';
             cur_buffer = &args_buffer[num_args++];
             buffer_len = 0;
         }
+        //be able to backspace in the shell
+        else if((int)next == 127){
+            uart_send('\010');
+            uart_send(' ');
+            uart_send('\010');
+            continue;
+        }
+        
         // Echo character
         uart_send(next);
+        //printf("%d", (int)next);
     }
 }
