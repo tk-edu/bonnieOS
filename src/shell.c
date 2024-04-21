@@ -41,6 +41,8 @@ void shell_run() {
                 for (int j = 0; j < strlen(args_buffer[i]); j++)
                     args_buffer[i][j] = '\0';
             }
+            cur_buffer = cmd_buffer;
+            num_args = 0;
             buffer_len = 0;
             continue;
         }
