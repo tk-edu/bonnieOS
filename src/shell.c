@@ -55,6 +55,9 @@ void gpio(int pin, int value) {
     put32(GPFSEL, selector);
     // Toggle pin
     put32(value == 1 ? GPSET0 : GPCLR0, 1);
+    uint32_t gp_set_clear_reg = get32(value == 1 ? GPSET0 : GPCLR0);
+    gp_set_clear_reg |= 1 << pin;
+    put32(value == 1 ? GPSET0 : GPCLR0, gp_set_clear_reg);
 }
 
 char* shell_run_command(char* cmd, char args[50][512], int num_args) {
@@ -64,9 +67,10 @@ char* shell_run_command(char* cmd, char args[50][512], int num_args) {
         /* 1 is high, 0 is low.
         On  = tie low
         Off = tie high */
-        int value = 1;
+        int value = 0;
         if (!strncmp(args[1], "on", 2))
-            value = 0;
+            value = 1;
+        printf("Toggling pin %d\n\r", atoi(args[0]));
         gpio(atoi(args[0]), value);
     }
 }

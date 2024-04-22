@@ -39,8 +39,8 @@ int strncmp(const char* s1, const char* s2, size_t n) {
     return *(const unsigned char*)s1 - *(const unsigned char*)s2;
 }
 
-double pow(double base, double exponent){
-    double total = 1;
+int pow(int base, int exponent){
+    int total = 1;
         
     if(exponent == 0){
         return 1;
@@ -58,3 +58,5 @@ double pow(double base, double exponent){
         return total;
     }
 }
+
+
