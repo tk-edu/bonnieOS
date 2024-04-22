@@ -1,5 +1,9 @@
+#include <stdint.h>
+
+#include "peripherals/gpio.h"
 #include "mini_uart.h"
 #include "shell.h"
+#include "utils.h"
 #include "libc.h"
 #include "io.h"
 
@@ -7,9 +11,64 @@ void echo(char* text) {
     printf("%s\n\r", text);
 }
 
+void gpio(int pin, int value) {
+    uint32_t GPFSEL;
+    switch (pin) {
+        case 0: case 1: case 2:
+        case 3: case 4: case 5:
+        case 6: case 7: case 8: case 9:
+            GPFSEL = GPFSEL0;
+            break;
+        case 10: case 11: case 12:
+        case 13: case 16: case 17:
+        case 18: case 19:
+            GPFSEL = GPFSEL1;
+            break;
+        case 20: case 21: case 22:
+        case 23: case 24: case 25:
+        case 26: case 27:
+            GPFSEL = GPFSEL2;
+            break;
+        case 14: case 15:
+            printf("Error: Cannot toggle GPIO pins 14 or 15; currently in use for UART\n\r");
+            return;
+        default:
+            printf("Error: unsupported GPIO pin\n\r");
+            return;
+    }
+    uint32_t selector = get32(GPFSEL);
+    // Clear selector
+    selector &= ~(7 << 12);
+    // Set GPIO pin to be an output
+    uint32_t pin_bit_offset = 0;
+    if (GPFSEL == GPFSEL0)
+        pin_bit_offset = pin * 3;
+    else if (GPFSEL == GPFSEL1) {
+        for (int i = pin; i <= 19; i++)
+            pin_bit_offset += 3;
+    }
+    else if (GPFSEL == GPFSEL2) {
+        for (int i = pin; i <= 27; i++)
+            pin_bit_offset += 3;
+    }
+    selector |= 1 << (pin_bit_offset);
+    put32(GPFSEL, selector);
+    // Toggle pin
+    put32(value == 1 ? GPSET0 : GPCLR0, 1);
+}
+
 char* shell_run_command(char* cmd, char args[50][512], int num_args) {
     if (!strncmp(cmd, "echo", 4))
         echo(args[0]);
+    else if (!strncmp(cmd, "gpio", 4)) {
+        /* 1 is high, 0 is low.
+        On  = tie low
+        Off = tie high */
+        int value = 1;
+        if (!strncmp(args[1], "on", 2))
+            value = 0;
+        gpio(atoi(args[0]), value);
+    }
 }
 
 void shell_run() {
@@ -41,9 +100,11 @@ void shell_run() {
                 for (int j = 0; j < strlen(args_buffer[i]); j++)
                     args_buffer[i][j] = '\0';
             }
+            buffer_len = 0;
+
             cur_buffer = cmd_buffer;
             num_args = 0;
-            buffer_len = 0;
+
             continue;
         }
         // Parse argument

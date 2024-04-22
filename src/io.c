@@ -1,7 +1,12 @@
+#include <stdbool.h>
 #include <stdarg.h>
 
 #include "mini_uart.h"
 #include "libc.h"
+
+bool is_digit(char c) {
+    return c >= '0' && c <= '9';
+}
 
 // Digit-to-char
 char dtoc(int d) {
@@ -31,6 +36,22 @@ int itoa(char* buffer, int buffer_start, int buffer_end, int i) {
     for (int k = num_places - 1; k >= 0 && j + k < buffer_end; k--, j++)
         buffer[j] = place_values[k];
     return j;
+}
+
+// Only handles positive integers!
+int atoi(char* string) {
+    int i = 0;
+    int place_values[50] = {0};
+    int num_places = 0;
+    for (int j = strlen(string) - 1; j >= 0; j--) {
+        if (is_digit(string[j]))
+            place_values[num_places++] = string[j] - '0';
+        else break;
+    }
+    for (int j = 0; j < num_places; j++) {
+        i += place_values[j] * pow(10, j);
+    }
+    return i;
 }
 
 void print(char* string) {
