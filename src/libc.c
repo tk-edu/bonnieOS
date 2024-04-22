@@ -38,3 +38,23 @@ int strncmp(const char* s1, const char* s2, size_t n) {
     }
     return *(const unsigned char*)s1 - *(const unsigned char*)s2;
 }
+
+double pow(double base, double exponent){
+    double total = 1;
+        
+    if(exponent == 0){
+        return 1;
+    }
+    if(exponent == 1){
+        return base;
+    }
+    else if(exponent == 0 && base == 0){
+        return 0;
+    }
+    else{
+        for(int i = 0; i < exponent; i++){
+            total *= base;
+        }
+        return total;
+    }
+}
